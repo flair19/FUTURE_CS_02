@@ -1,121 +1,103 @@
-# FUTURE_CS_02
-Password Strength Analyzer
-A simple Python tool to analyze the strength of passwords based on length and character types. This script provides a score, strength rating, and feedback to help users create more secure passwords. Part of the FUTURE_CS_02 repository.
-Features
-Evaluates password strength based on:
-Length (minimum 8 characters)
+import re
+import string
 
-Use of uppercase letters
+class passwordAnalyzer:
+    def __init__(self):
+        self.score = 0
+        self.feedback=[]
+        self.min_length = 8
 
-Use of lowercase letters
+    def analyze_password(self,password):
+        #Main Function to analyze password strength.
+        self.score = 0
+        self.feedback = []
 
-Use of numbers
+        #Check for specifics
+        self._check_length(password)
+        self._check_character_types(password)
 
-Use of special characters
+        #Calculate final strength
+        strength = self._calculate_strength()
+        return{
+            "score": self.score,
+            "strength": strength,
+            "feedback": self.feedback
+        }
 
-Returns a score out of 100
+    def _check_length(self, password):
+        #Check for password length
+        length = len(password)
+        if length < self.min_length:
+            self.feedback.append(f"Password should be at least {self.min_length} characters long" )
+        elif length >= 12:
+            self.score += 30
+        elif length >= 10:
+            self.score += 20
+        else:
+            self.score +=10
 
-Provides a strength rating (Very Weak, Weak, Moderate, Strong, Very Strong)
 
-Offers constructive feedback for improvement
+    def _check_character_types(self, password):
+        #check for different character types
+        if re.search(r"[A-Z]", password):
+            self.score += 15
+        else:
+            self.feedback.append("Add uppercase letters for better strength")
 
-Installation
-Clone the Repository  
-bash
+        if re.search(r"[a-z]", password):
+            self.score += 15
+        else:
+            self.feedback.append("Add lowercase letter for better strength")
 
-git clone https://github.com/flair19/FUTURE_CS_02.git
-cd FUTURE_CS_02
+        if re.search(r"[0-9]", password):
+            self.score +=15
+        else:
+            self.feedback.append("Add numbers for better strength")
+        if re.search(r"[!@#$%^&*()_+=]", password):
+            self.score += 20
+        else:
+            self.feedback.append("Add special characters for better strength")
 
-Requirements
-This project uses only Python's standard libraries (re and string), so no additional dependencies are required. Ensure you have Python 3.x installed.
-
-Run the Script
-You can run the script directly:
-bash
-
-python password_analyzer.py
-
-Usage
-The script includes a passwordAnalyzer class and a test_password function to evaluate passwords. You can use it in two ways:
-1. Run the Example
-The script includes a set of test passwords. Simply execute the file to see the analysis:
-bash
-
-python password_analyzer.py
-
-Example output:
-
-password: Password123!
-Score: 80/100
-Strength: Strong
-Feedback:
-
-password: Ab1!
-Score: 50/100
-Strength: Weak
-Feedback:
-- Password should be at least 8 characters long
-
-2. Use in Your Code
-Import and use the passwordAnalyzer class in your own project:
-python
-
-from password_analyzer import passwordAnalyzer
-
-analyzer = passwordAnalyzer()
-result = analyzer.analyze_password("MyPass123!")
-print(result["score"])       # e.g., 80
-print(result["strength"])    # e.g., "Strong"
-print(result["feedback"])    # e.g., []
-
-How It Works
-Length Check: Adds points based on password length (10 for 8-9, 20 for 10-11, 30 for 12+).
-
-Character Types: Adds points for including:
-Uppercase letters (+15)
-
-Lowercase letters (+15)
-
-Numbers (+15)
-
-Special characters (+20)
-
-Strength Rating: Calculated based on the total score:
-90+: Very Strong
-
-80-89: Strong
-
-60-79: Moderate
-
-40-59: Weak
-
-Below 40: Very Weak
-
-Feedback: Suggestions are provided if criteria are not met.
-
-Contributing
-Feel free to fork this repository and submit pull requests with improvements, such as:
-Additional scoring criteria
-
-Customizable minimum length
-
-More detailed feedback
-
-Fork the repo
-
-Create a new branch (git checkout -b feature-branch)
-
-Commit your changes (git commit -m "Add new feature")
-
-Push to the branch (git push origin feature-branch)
-
-Open a pull request
-
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
-Acknowledgments
-Built with Python’s re module for regular expression matching.
+    def _calculate_strength(self):
+        #Calculate overall strength rating
+        if self.score >= 90:
+            return "Very Strong"
+        if self.score >= 80:
+            return "Strong" 
+        elif self.score >= 60:
+            return "Moderate" 
+        elif self.score >= 40:
+            return "Weak"
+        else:
+            return "Very Weak"
 
 
 
+def test_password(password):
+        #A funtion to test the password
+        analyzer = passwordAnalyzer()
+        result = analyzer.analyze_password(password)
 
+
+        print(f"\npassword:  {password}")
+        print(f"Score: {result['score']}/100") 
+        print(f"Strength: {result['strength']}")
+        if result['feedback']:
+            print("Feedback:") 
+            for item in result['feedback']:
+                print(f"- {item}") 
+
+
+#Axample usage
+if __name__ == "__main__":
+    test_passwords = [
+        "pass123",
+        "Password123!",
+        "Ab1!",
+        "SuperSecurePass123#",
+        "aaa111",
+        "#Apollo2020"
+    ]
+
+    for pwd in test_passwords:
+        test_password(pwd)
